@@ -1,0 +1,6 @@
+%{
+  "blankable": {:hex, :blankable, "1.0.0", "89ab564a63c55af117e115144e3b3b57eb53ad43ba0f15553357eb283e0ed425", [:mix], [], "hexpm", "7cf11aac0e44f4eedbee0c15c1d37d94c090cb72a8d9fddf9f7aec30f9278899"},
+  "dbg_inspect": {:hex, :dbg_inspect, "0.1.0", "612b42f1041b52c6021596a916918b19884398f9683c7c95bd4611c8dbb97a72", [:mix], [], "hexpm", "a3fa3f8eecaa834f5da155706a0fb3482bb7a121bd7c1b350d0913158adac1b9"},
+  "pit": {:hex, :pit, "1.2.0", "6cb8f20d800bf07454d9aa6821c00ef17f8ea484d9c0effb59d448b779f08c12", [:mix], [], "hexpm", "7a5922fb8979c12b13fb8e50b931efb6e01a1ad965f5ee1402bdb6858f9b0f5a"},
+  "typed_struct": {:hex, :typed_struct, "0.2.1", "e1993414c371f09ff25231393b6430bd89d780e2a499ae3b2d2b00852f593d97", [:mix], [], "hexpm", "8f5218c35ec38262f627b2c522542f1eae41f625f92649c0af701a6fab2e11b3"},
+}

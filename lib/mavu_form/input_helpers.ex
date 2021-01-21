@@ -9,6 +9,8 @@ defmodule MavuForm.InputHelpers do
     MyAppBe.TwHorizontalInputTheme
   end
 
+  def theme_module(form, field, opts), do: theme_module(%{form: form, field: field, opts: opts})
+
   def input(assigns) do
     label_block = label_block(assigns)
     input_block = input_block(assigns)
@@ -37,10 +39,26 @@ defmodule MavuForm.InputHelpers do
   end
 
   def error_block(assigns) do
-    theme_module(assigns).error_block(assigns)
+    if function_exported?(theme_module(assigns), :error_block, 1) do
+      theme_module(assigns).error_block(assigns)
+    else
+      []
+    end
   end
 
   def error_block(form, field, opts \\ []), do: error_block(create_assigns(form, field, opts))
+
+  def error_block(assigns) do
+    if function_exported?(theme_module(assigns), :error_block, 1) do
+      theme_module(assigns).error_block(assigns)
+    else
+      []
+    end
+  end
+
+  def mark_label_as_required(inner_content, assigns) when is_map(assigns) do
+    [inner_content, " *"]
+  end
 
   def input_block(form, field, opts \\ []), do: input_block(create_assigns(form, field, opts))
 
@@ -71,14 +89,18 @@ defmodule MavuForm.InputHelpers do
       label_classes = theme_module(assigns).get_classes_for_element(:raw_label, assigns)
 
       tag_options =
-        MavuForm.MfUtils.get_tag_options_for_block(:raw_label, assigns)
+        MavuForm.Engine.get_tag_options_for_block(:raw_label, assigns)
         |> Keyword.put(
           :class,
-          MavuForm.MfUtils.process_classes(label_classes, :raw_label, assigns)
+          MavuForm.Engine.process_classes(label_classes, :raw_label, assigns)
         )
         |> Keyword.put(:for, Phoenix.HTML.Form.input_id(assigns.form, assigns.field))
 
-      content_tag(:label, assigns.opts[:label], tag_options)
+      content_tag(
+        :label,
+        MavuForm.process_html(assigns.opts[:label], :raw_label, assigns),
+        tag_options
+      )
     else
       ""
     end
@@ -90,8 +112,8 @@ defmodule MavuForm.InputHelpers do
     input_classes = theme_module(assigns).get_classes_for_element(:raw_input, assigns)
 
     tag_options =
-      MavuForm.MfUtils.get_tag_options_for_block(:raw_input, assigns)
-      |> Keyword.put(:class, MavuForm.MfUtils.process_classes(input_classes, :raw_input, assigns))
+      MavuForm.Engine.get_tag_options_for_block(:raw_input, assigns)
+      |> Keyword.put(:class, MavuForm.Engine.process_classes(input_classes, :raw_input, assigns))
       |> Keyword.put(:for, Phoenix.HTML.Form.input_id(assigns.form, assigns.field))
 
     case assigns.type do
@@ -114,13 +136,21 @@ defmodule MavuForm.InputHelpers do
 
   def raw_input(form, field, opts \\ []), do: raw_input(create_assigns(form, field, opts))
 
+  def default_options(form, field, opts) do
+    if function_exported?(theme_module(form, field, opts), :default_options, 3) do
+      theme_module(form, field, opts).default_options(form, field, opts)
+    else
+      []
+    end
+  end
+
   def create_assigns(form, field, opts \\ []) do
     type = opts[:using] || :text_input
 
     %{
       form: form,
       field: field,
-      opts: opts,
+      opts: Keyword.merge(default_options(form, field, opts), opts),
       type: type,
       has_error: has_error(form, field, opts)
     }

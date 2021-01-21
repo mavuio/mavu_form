@@ -29,29 +29,6 @@ defmodule MavuForm.MfHelpers do
     end
   end
 
-  def to_int(val) do
-    case val do
-      val when is_integer(val) ->
-        val
-
-      val when is_binary(val) ->
-        Integer.parse(val)
-        |> case do
-          {val, ""} -> val
-          _ -> nil
-        end
-
-      val when is_float(val) ->
-        Kernel.round(val)
-
-      %Decimal{} = val ->
-        val |> Decimal.round() |> Decimal.to_integer()
-
-      nil ->
-        nil
-    end
-  end
-
   def present?(term) do
     !Blankable.blank?(term)
   end

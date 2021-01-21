@@ -26,7 +26,8 @@ defmodule MavuForm.MixProject do
       {:pit, "~> 1.2.0"},
       {:dbg_inspect, "~> 0.1.0"},
       {:typed_struct, "~> 0.2.1"},
-      {:blankable, "~> 1.0"}
+      {:blankable, "~> 1.0"},
+      {:phoenix_html, "~> 2.11"}
     ]
   end
 end

@@ -2,20 +2,37 @@ defmodule MavuForm.InputHelpers do
   use Phoenix.HTML
 
   # import Mavuform
-
+  alias MavuForm.MfHelpers
   # inspired by http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix/
 
-  def theme_module(_assigns) do
-    MyAppBe.TwHorizontalInputTheme
+  def theme_module(assigns) do
+    assigns.opts[:theme] ||
+      get_theme_key_for_form(assigns.form)
+      |> module_for_theme_key()
   end
+
+  def module_for_theme_key(theme_key) do
+    Application.get_env(:mavu_form, :themes)[theme_key]
+  end
+
+  def get_theme_key_for_form(form) do
+    form.options[:theme]
+    |> MfHelpers.if_nil(Application.get_env(:mavu_form, :default_theme))
+  end
+
+  Phoenix.HTML.Form
 
   def theme_module(form, field, opts), do: theme_module(%{form: form, field: field, opts: opts})
 
   def input(assigns) do
-    label_block = label_block(assigns)
-    input_block = input_block(assigns)
+    if function_exported?(theme_module(assigns), :input, 1) do
+      theme_module(assigns).input(assigns)
+    else
+      label_block = label_block(assigns)
+      input_block = input_block(assigns)
 
-    theme_module(assigns).wrap([label_block, input_block], :container, assigns)
+      theme_module(assigns).wrap([label_block, input_block], :container, assigns)
+    end
   end
 
   def input(form, field, opts \\ []), do: input(create_assigns(form, field, opts))
@@ -33,10 +50,16 @@ defmodule MavuForm.InputHelpers do
   def label_block(form, field, opts \\ []), do: label_block(create_assigns(form, field, opts))
 
   def input_block(assigns) do
-    wrapped_input = wrapped_input(assigns)
-    error_block = error_block(assigns)
-    theme_module(assigns).wrap([wrapped_input, error_block], :input_block, assigns)
+    if function_exported?(theme_module(assigns), :input_block, 1) do
+      theme_module(assigns).input_block(assigns)
+    else
+      wrapped_input = wrapped_input(assigns)
+      error_block = error_block(assigns)
+      theme_module(assigns).wrap([wrapped_input, error_block], :input_block, assigns)
+    end
   end
+
+  def input_block(form, field, opts \\ []), do: input_block(create_assigns(form, field, opts))
 
   def error_block(assigns) do
     if function_exported?(theme_module(assigns), :error_block, 1) do
@@ -48,23 +71,23 @@ defmodule MavuForm.InputHelpers do
 
   def error_block(form, field, opts \\ []), do: error_block(create_assigns(form, field, opts))
 
-  def error_block(assigns) do
-    if function_exported?(theme_module(assigns), :error_block, 1) do
-      theme_module(assigns).error_block(assigns)
-    else
-      []
-    end
-  end
-
   def mark_label_as_required(inner_content, assigns) when is_map(assigns) do
     [inner_content, " *"]
   end
 
-  def input_block(form, field, opts \\ []), do: input_block(create_assigns(form, field, opts))
-
   def wrapped_label(assigns) do
     raw_label = raw_label(assigns)
     theme_module(assigns).wrap([raw_label], :wrapped_label, assigns)
+  end
+
+  def input_wrap(inner_content, block_name, assigns)
+      when is_atom(block_name) and is_map(assigns) do
+    theme_module(assigns).wrap([inner_content], block_name, assigns)
+  end
+
+  def input_wrap(form, field, block_name, opts \\ [], do: inner_content)
+      when is_atom(block_name) do
+    input_wrap(inner_content, block_name, create_assigns(form, field, opts))
   end
 
   def wrapped_label(form, field, opts \\ []),
@@ -97,7 +120,7 @@ defmodule MavuForm.InputHelpers do
         |> Keyword.put(:for, Phoenix.HTML.Form.input_id(assigns.form, assigns.field))
 
       content_tag(
-        :label,
+        :span,
         MavuForm.process_html(assigns.opts[:label], :raw_label, assigns),
         tag_options
       )

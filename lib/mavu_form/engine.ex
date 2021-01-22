@@ -34,7 +34,8 @@ defmodule MavuForm.Engine do
     :items,
     :type,
     :using,
-    :custom_fn
+    :custom_fn,
+    :theme
   ]
 
   def apply_cmds_on_classnames(classnames, cmds) when is_list(cmds) and is_list(classnames) do
@@ -54,9 +55,9 @@ defmodule MavuForm.Engine do
     # apply_cmd_on_html(hd(cmds), html, assigns)
 
     cmds
-    |> IO.inspect(label: "mwuits-debug 2021-01-21_17:52 ")
+    # |> IO.inspect(label: "mwuits-debug 2021-01-21_17:52 ")
     |> Enum.reduce(html, fn cmd, html ->
-      cmd |> IO.inspect(label: "mwuits-debug 2021-01-21_17:51 apply")
+      # cmd |> IO.inspect(label: "mwuits-debug 2021-01-21_17:51 apply")
       apply_cmd_on_html(cmd, html, assigns)
     end)
   end
@@ -143,7 +144,7 @@ defmodule MavuForm.Engine do
 
   def apply_cmd_on_html({:update_html, fun}, existing_html, assigns)
       when is_map(assigns) do
-    fun |> IO.inspect(label: "mwuits-debug 2021-01-21_17:39 RUN :update_html ")
+    # fun |> IO.inspect(label: "mwuits-debug 2021-01-21_17:39 RUN :update_html ")
 
     if not is_function(fun, 1) do
       raise "function passed to :update command has to have arity of 1"
@@ -181,9 +182,8 @@ defmodule MavuForm.Engine do
 
   def process_html(html, blockname, assigns)
       when is_atom(blockname) do
-    cmds =
-      get_html_cmds_for_block(blockname, assigns)
-      |> IO.inspect(label: "mwuits-debug 2021-01-21_17:35 html cmds for #{blockname}")
+    cmds = get_html_cmds_for_block(blockname, assigns)
+    # |> IO.inspect(label: "mwuits-debug 2021-01-21_17:35 html cmds for #{blockname}")
 
     apply_cmds_on_html(html, assigns, cmds)
   end

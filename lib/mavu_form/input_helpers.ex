@@ -1,8 +1,6 @@
 defmodule MavuForm.InputHelpers do
   use Phoenix.HTML
 
-  # import Mavuform
-  alias MavuForm.MfHelpers
   # inspired by http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix/
 
   def theme_module(assigns) do
@@ -17,7 +15,7 @@ defmodule MavuForm.InputHelpers do
 
   def get_theme_key_for_form(form) do
     form.options[:theme]
-    |> MfHelpers.if_nil(Application.get_env(:mavu_form, :default_theme))
+    |> MavuUtils.if_nil(Application.get_env(:mavu_form, :default_theme))
   end
 
   Phoenix.HTML.Form
@@ -179,9 +177,20 @@ defmodule MavuForm.InputHelpers do
     }
   end
 
-  def has_error(form, field, _opts \\ []) do
+  def has_error(form, field, opts \\ [])
+
+  def has_error(form, field, _opts) when is_atom(field) do
     form.errors
     |> Keyword.get_values(field)
+    |> case do
+      [] -> false
+      _ -> true
+    end
+  end
+
+  def has_error(form, field, _opts) when is_binary(field) do
+    form.errors
+    |> Enum.filter(fn {key, _} -> key == field end)
     |> case do
       [] -> false
       _ -> true

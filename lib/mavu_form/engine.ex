@@ -1,7 +1,6 @@
 defmodule MavuForm.Engine do
   @moduledoc false
 
-  import MavuForm.MfHelpers
   import Phoenix.HTML
 
   @blocknames [
@@ -96,7 +95,7 @@ defmodule MavuForm.Engine do
         end
       end)
     end)
-    |> Enum.filter(&present?/1)
+    |> Enum.filter(&MavuUtils.present?/1)
   end
 
   def apply_cmd_on_classname({:remove_classes, classnames_to_remove}, existing_classnames) do
@@ -112,7 +111,7 @@ defmodule MavuForm.Engine do
     end
 
     fun.(existing_classnames)
-    |> Enum.filter(&present?/1)
+    |> Enum.filter(&MavuUtils.present?/1)
   end
 
   def apply_cmd_on_classname({cmd, _}, _existing_classnames) do
@@ -162,7 +161,7 @@ defmodule MavuForm.Engine do
     classnames
     |> to_string()
     |> String.split(" ")
-    |> Enum.filter(&present?/1)
+    |> Enum.filter(&MavuUtils.present?/1)
   end
 
   def prepare_classname_list(classnames) when is_list(classnames), do: classnames

@@ -129,13 +129,14 @@ defmodule MavuForm.InputHelpers do
 
   def raw_label(form, field, opts \\ []), do: raw_label(create_assigns(form, field, opts))
 
-  def raw_input(assigns) do
+  def raw_input(assigns) when is_map(assigns) do
     input_classes = theme_module(assigns).get_classes_for_element(:raw_input, assigns)
 
     tag_options =
       MavuForm.Engine.get_tag_options_for_block(:raw_input, assigns)
       |> Keyword.put(:class, MavuForm.Engine.process_classes(input_classes, :raw_input, assigns))
       |> Keyword.put(:for, Phoenix.HTML.Form.input_id(assigns.form, assigns.field))
+      |> handle_value_formatter(assigns)
 
     case assigns.type do
       :select ->
@@ -152,6 +153,25 @@ defmodule MavuForm.InputHelpers do
           assigns.type,
           [assigns.form, assigns.field, tag_options]
         )
+    end
+  end
+
+  defp handle_value_formatter(keywords, assigns) when is_list(keywords) and is_map(assigns) do
+    value_formatter = Keyword.get(keywords, :value_formatter)
+
+    if(MavuUtils.present?(value_formatter)) do
+      if is_function(value_formatter, 1) do
+        keywords
+        |> Keyword.put(
+          :value,
+          value_formatter.(Phoenix.HTML.Form.input_value(assigns.form, assigns.field))
+        )
+        |> Keyword.delete(:value_formatter)
+      else
+        raise "value_formatter is not a function with arity of 1"
+      end
+    else
+      keywords
     end
   end
 

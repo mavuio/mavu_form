@@ -4,9 +4,13 @@ defmodule MavuForm.InputHelpers do
   # inspired by http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix/
 
   def theme_module(assigns) do
-    assigns.opts[:theme] ||
-      get_theme_key_for_form(assigns.form)
-      |> module_for_theme_key()
+    module =
+      assigns.opts[:theme] ||
+        get_theme_key_for_form(assigns.form)
+        |> module_for_theme_key()
+
+    Code.ensure_loaded!(module)
+    module
   end
 
   def module_for_theme_key(theme_key) do

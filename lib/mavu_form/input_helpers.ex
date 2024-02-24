@@ -39,7 +39,7 @@ defmodule MavuForm.InputHelpers do
 
   def input(form, field, opts \\ []), do: input(create_assigns(form, field, opts))
 
-  def label_block(%{type: :checkbox} = assigns) do
+  def label_block(%{using: :checkbox} = assigns) do
     wrapped_label = ""
     theme_module(assigns).wrap([wrapped_label], :label_block, assigns)
   end
@@ -95,7 +95,7 @@ defmodule MavuForm.InputHelpers do
   def wrapped_label(form, field, opts \\ []),
     do: wrapped_label(create_assigns(form, field, opts))
 
-  def wrapped_input(%{type: :checkbox} = assigns) do
+  def wrapped_input(%{using: :checkbox} = assigns) do
     raw_input = raw_input(assigns)
     wrapped_label = wrapped_label(assigns)
     theme_module(assigns).wrap([raw_input, wrapped_label], :wrapped_input, assigns)
@@ -142,7 +142,7 @@ defmodule MavuForm.InputHelpers do
       |> Keyword.put(:for, Phoenix.HTML.Form.input_id(assigns.form, assigns.field))
       |> handle_value_formatter(assigns)
 
-    case assigns.type do
+    case assigns.using do
       :select ->
         Phoenix.HTML.Form.select(
           assigns.form,
@@ -154,7 +154,7 @@ defmodule MavuForm.InputHelpers do
       _ ->
         apply(
           Phoenix.HTML.Form,
-          assigns.type,
+          assigns.using,
           [assigns.form, assigns.field, tag_options]
         )
     end
@@ -190,13 +190,13 @@ defmodule MavuForm.InputHelpers do
   end
 
   def create_assigns(form, field, opts \\ []) do
-    type = opts[:using] || :text_input
+    using = opts[:using] || :text_input
 
     %{
       form: form,
       field: field,
       opts: Keyword.merge(default_options(form, field, opts), opts),
-      type: type,
+      using: using,
       has_error: has_error(form, field, opts)
     }
   end

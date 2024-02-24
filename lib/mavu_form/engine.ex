@@ -31,7 +31,6 @@ defmodule MavuForm.Engine do
 
   @reserved_keywords [
     :items,
-    :type,
     :using,
     :custom_fn,
     :theme

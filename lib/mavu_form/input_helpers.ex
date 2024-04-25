@@ -5,9 +5,9 @@ defmodule MavuForm.InputHelpers do
 
   def theme_module(assigns) do
     module =
-      assigns.opts[:theme] ||
-        get_theme_key_for_form(assigns.form)
-        |> module_for_theme_key()
+      (assigns.opts[:theme] ||
+         get_theme_key_for_form(assigns.form))
+      |> module_for_theme_key()
 
     Code.ensure_loaded!(module)
     module

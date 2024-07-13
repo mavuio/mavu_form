@@ -1,5 +1,7 @@
 defmodule MavuForm.InputHelpers do
-  use Phoenix.HTML
+  import Phoenix.HTML
+  import Phoenix.HTML.Form
+  use PhoenixHTMLHelpers
 
   # inspired by http://blog.plataformatec.com.br/2016/09/dynamic-forms-with-phoenix/
 

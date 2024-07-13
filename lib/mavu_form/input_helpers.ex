@@ -24,8 +24,6 @@ defmodule MavuForm.InputHelpers do
     |> MavuUtils.if_nil(Application.get_env(:mavu_form, :default_theme))
   end
 
-  Phoenix.HTML.Form
-
   def theme_module(form, field, opts), do: theme_module(%{form: form, field: field, opts: opts})
 
   def input(assigns) do
@@ -146,7 +144,7 @@ defmodule MavuForm.InputHelpers do
 
     case assigns.using do
       :select ->
-        Phoenix.HTML.Form.select(
+        PhoenixHTMLHelpers.Form.select(
           assigns.form,
           assigns.field,
           assigns.opts[:items],
@@ -155,7 +153,7 @@ defmodule MavuForm.InputHelpers do
 
       _ ->
         apply(
-          Phoenix.HTML.Form,
+          PhoenixHTMLHelpers.Form,
           assigns.using,
           [assigns.form, assigns.field, tag_options]
         )

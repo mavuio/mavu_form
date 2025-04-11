@@ -1,7 +1,7 @@
 defmodule MavuForm.MixProject do
   use Mix.Project
 
-  @version "1.0.8"
+  @version "1.0.9"
   def project do
     [
       app: :mavu_form,
@@ -29,7 +29,7 @@ defmodule MavuForm.MixProject do
     [
       # {:dep_from_hexpm, "~> 0.3.0"},
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
-      {:mavu_utils, "~> 1.0"},
+      # {:mavu_utils, "~> 1.0"},
       {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_html, "~> 4.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false}
